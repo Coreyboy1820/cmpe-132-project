@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+</head>
+<header class="sticky">
+    <div class="row" >
+        <div class="col" name="logInButton" , id="Buttons" style="float:left">
+            {{if not .CurrUser.LoggedIn}}
+                <h2>Log In</h2>
+            {{else}}
+                <h2>Hello, {{.CurrUser.FirstName}}</h2>
+            {{end}}
+        </div>
+        <div class="col" style="float:left">
+            <h2>Home</h2>
+        </div>
+    </div>
+    <div class="row" name="logo" id="logo">
+        <h1 style="font-size: 100px; text-align:center;">SJSU Library</h1>
+    </div>
+</header>
+<div class="row" name="navbar" id="navbar">
+</div>
+<div class="row">
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('[name="logInButton"').click(function () {
+            window.location.href = "/logIn/";
+        });
+        $('[name="navHome"]').click(function () {
+            window.location.href = "/";
+        });
+        $('[name="navComments"]').click(function () {
+            window.location.href = "/comments/";
+        });
+        $('[name="navAboutMe"]').click(function () {
+            window.location.href = "/aboutMe/";
+        });
+    });
+</script>

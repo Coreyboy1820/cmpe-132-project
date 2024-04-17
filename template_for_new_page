@@ -1,0 +1,25 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<title>Home</title>
+<header>
+    <div class="row" name="headerButtonRow" id="headerButtonRow">
+        <div class="col" name="headerLogInButton" , id="headerButtons">log In</div>
+    </div>
+    <div class="row" name="logo" id="logo">
+        <h1 style="font-size: 100px; text-align:center;">Corey Kelley</h1>
+    </div>
+</header>
+<div class="row" name="navbar" id="navbar">
+    <div class="col here" id="navButton" name="navHome">
+        <h2>Home</h2>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('[name="headerLogInButton"').click(function () {
+            window.location.href = "/logIn/";
+        });
+        $('[name="navHome"]').click(function () {
+            window.location.href = "/";
+        });
+    });
+</script>

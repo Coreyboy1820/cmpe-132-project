@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+</head>
+
+
+<div class="row" style="height:100%; text-align: center;">
+    <div class="col" name="logInBox" id="logInBox">
+        <div class="col">
+            <div class="row">
+                <h2>Welcome to the SJSU Library's Website!</h2>
+                <h4>Please Log In Below</h4>
+                <h4>If it's your first time logging in, just enter your Student ID</h4>
+            </div>
+            <div class="row"
+                style="border-top: solid; border-width: 1px; border-color: rgb(218, 218, 218);">
+                <label>Student ID</label>
+                <input type="text" id="studentId">
+            </div>
+            <div class="row">
+                <label>Password</label>
+                <input type="password" id="password">
+            </div>
+            <div class="row">
+                <label>E-Mail</label>
+                <input type="text" id="email">
+            </div>
+            <div class="row">
+                <div class="col button" name="cancel" id="logInBoxField">Cancel</div>
+                <div class="col button" name="login" id="logInBoxField">Log In</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('[name="cancel"]').click(function (e) {
+            window.location.href = "/";
+        })
+        $('[name="login"]').click(function (e) {
+
+            var studentId = $("#studentId").val();
+            var password = $("#password").val();
+            var email = $("#email").val();
+            var json = {"studentId":studentId, "password":password, "email":email};
+            // Convert the data to a JSON string
+            var jsonDataString = JSON.stringify(json);
+
+            // Create a new XMLHttpRequest object
+            var xhr = new XMLHttpRequest();
+
+            // Configure the request
+            xhr.open('POST', "/signin/", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            // Set up a callback function to handle the response
+            xhr.onreadystatechange = function () {
+                console.log(xhr.responseText);
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    console.log(xhr.status)
+                    if(xhr.status === 302) {
+                        window.location.href = window.location.origin + "/firstTimeLogin/";
+                    }
+                    else if (xhr.status === 200) {
+                        window.location.href = window.location.origin;
+                    } else {
+                        alert("Password, email, or studentId were incorrect. Try Again")
+                    }
+                }
+            };
+
+            // Send the request with the JSON data
+            xhr.send(jsonDataString);
+        })
+    });
+</script>
