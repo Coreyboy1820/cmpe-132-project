@@ -47,8 +47,38 @@ func AddToCart(w http.ResponseWriter, r *http.Request){
 		err := json.NewDecoder(r.Body).Decode(&book)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+		// Then we querry to check if the book is in stock or exists
+		books, err := dbQuerries.Book{}.Read("WHERE bookId=?", book.BookId)
+		if err != nil {
+			log.Print(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		if len(books) == 0 {
+			log.Print("book does not exist")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		} 
+		requestedBook := books[0]
+		if books[0].Count == 0 {
+			log.Print("Book out of stock")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		// then we update the stock to make sure it can't be further reduced
+		updateStmt := "UPDATE books SET count=? WHERE bookId=?"
+		_, err = dbutil.DB.Exec(updateStmt, (requestedBook.Count-1), book.BookId)
+		if err != nil {
+			log.Print(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		// finally, we insert the book into the cart
 		insertStmt := "INSERT INTO cart (userId, bookId) VALUES (?, ?)"
 		_, err = dbutil.DB.Exec(insertStmt, userpkg.CurrUser.UserId, book.BookId)
 		if err != nil {

@@ -25,8 +25,14 @@ CREATE TABLE IF NOT EXISTS cart (
     bookId INTEGER REFERENCES books
 );
 
+CREATE TABLE IF NOT EXISTS libraryFunds (
+    nameOfFund TEXT UNIQUE,
+    funds INTEGER
+);
+
 CREATE VIEW booksInCart 
 AS SELECT 
+    cartId,
     userId,
     cart.bookId,
     bookName,
@@ -39,7 +45,9 @@ WHERE
 
 CREATE VIEW booksAndCheckedOut
 AS SELECT 
-    bookId,
+    checkedOutBooksId,
+    checkedOutBooks.bookId,
+    userId,
     bookName,
     count,
     isbn,

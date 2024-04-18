@@ -9,7 +9,9 @@ import(
 )
 
 type BooksAndCheckedOut struct {
+	CheckedOutBooksId int
 	BookId int
+	UserId int
 	BookName string
 	Count int
 	Isbn string
@@ -29,7 +31,9 @@ func (b BooksAndCheckedOut) Read(whereStmt string, args... interface{}) (books [
 		for rows.Next() {
 			book := BooksAndCheckedOut{}
 			err = rows.Scan(
+				&book.CheckedOutBooksId,
 				&book.BookId,
+				&book.UserId,
 				&book.BookName,
 				&book.Count,
 				&book.Isbn,

@@ -42,6 +42,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
+
 	// make sure the studentId was a valid student Id
 	if len(users) == 0 {
 		userpkg.CurrUser = userpkg.User{}
@@ -49,28 +50,33 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		// TODO: throw some error here that login was unsuccesful
 		return
 	}
+	
 	// make sure the student Id isn't duplicated
 	if(len(users) > 1) {
 		userpkg.CurrUser = userpkg.User{}
 		log.Print("Unique identifier did not hold fix the database")
 		return
 	}
+
 	userpkg.CurrUser = users[0]
 	// if the password hasn't been set yet, then we redirect to setting up the password
 	if(!userpkg.CurrUser.PasswordSet) {
 		w.WriteHeader(http.StatusFound)
 		return
 	}
+
 	// now we can check the password and email to make sure they line up with the studentId
 	if(userpkg.CurrUser.Email != Credentials.Email) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
+
 	hashedPassword := crypto.HashPassword(Credentials.Password+userpkg.CurrUser.Salt)
 	if(hashedPassword != userpkg.CurrUser.PasswordHash) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
+	
 	err = UpdateLogin(true)
 	if(err != nil) {
 		log.Print(err)

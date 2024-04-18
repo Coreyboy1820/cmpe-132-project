@@ -9,6 +9,7 @@ import(
 )
 
 type BooksInCart struct {
+	CartId int
 	UserId int
 	BookId int
 	BookName string
@@ -28,6 +29,7 @@ func (b BooksInCart) Read(whereStmt string, args... interface{}) (books []BooksI
 		for rows.Next() {
 			book := BooksInCart{}
 			err = rows.Scan(
+				&book.CartId,
 				&book.UserId,
 				&book.BookId,
 				&book.BookName,

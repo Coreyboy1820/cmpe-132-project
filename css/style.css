@@ -50,3 +50,7 @@ input {
 .hiddenData {
   display:none;
 }
+
+.note {
+  text-align: center;
+}

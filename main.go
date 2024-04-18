@@ -37,6 +37,10 @@ func main() {
 	http.HandleFunc("/checkoutBook/", CheckoutBook)
 	http.HandleFunc("/addToCart/", AddToCart)
 	http.HandleFunc("/cart/", HandleCart)
+	http.HandleFunc("/deleteFromCart/", DeleteFromCart)
+	http.HandleFunc("/checkout/", Checkout)
+	http.HandleFunc("/checkedOutBooks/", HandleCheckedOutBooks)
+	http.HandleFunc("/reserveBook/", ReserveBook)
 
 	log.Println("Starting server on localhost:8080")
 	http.ListenAndServe(":8080", nil)

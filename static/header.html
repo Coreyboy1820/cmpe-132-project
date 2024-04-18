@@ -25,9 +25,10 @@
             <button class="btn btn-primary navbarButton" id="navCart">
                 Cart ({{$cartSize}})
             </button>
+            <button class="btn btn-primary navbarButton" id="checkedOutBooks">
+                Checked Out Books
+            </button>
             {{end}}
-        {{if .CurrUser.LoggedIn}}
-        {{end}}
             <button class="btn btn-primary navbarButton" id="navHome">
                 Home
             </button>
@@ -50,6 +51,9 @@
         });
         $('#navCart').click(function () {
             window.location.href = "/cart/";
+        });
+        $('#checkedOutBooks').click(function () {
+            window.location.href = "/checkedOutBooks/";
         });
     });
 </script>

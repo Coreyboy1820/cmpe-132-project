@@ -1,0 +1,75 @@
+{{template "head" .}} 
+<body>
+    {{template "header" .}}
+    <main>
+        <div class="row bookRowContainer">
+            {{ $currentUser := .CurrUser}}
+            {{range .CheckedOutBooks}}
+                <div class="col bookColContainer">
+                    {{ .BookName }}
+                    <br>
+                    <br>
+                    ISBN-10: {{.Isbn}}
+                    <br>
+                    <br>
+                    In Stock: {{.Count}}
+                    <br>
+                    <br>
+                    Checked Out: {{.CheckedOutDate}}
+                    <br>
+                    <br>
+                    Due: {{.DueDate}}
+                    {{ if $currentUser.ReserveBooks }}
+                        <br>
+                        <br>
+                        <div>
+                            <label>Student ID</label>
+                            <input type="text" name="studentId">
+                            <button type="submit" class="btn btn-warning" name="reserve" id="{{.CheckedOutBooksId}}">Reserve</button>
+                        </div>
+                    {{ end }}
+                </div>
+            {{ end }}
+        </div>
+    </main>
+</body>
+<script>
+    $(document).ready(function () {
+        $('[name="reserve"]').click(function (e) {
+
+            var reserveButton = $(this);
+            var checkedOutBooksId = parseInt(reserveButton.attr("id"));
+            var studentIdInput = reserveButton.prev();
+            var studentId = studentIdInput.val();
+            var json = {"checkedOutBooksId":checkedOutBooksId, "studentId":studentId};
+            // Convert the data to a JSON string
+            var jsonDataString = JSON.stringify(json);
+
+            // Create a new XMLHttpRequest object
+            var xhr = new XMLHttpRequest();
+
+            // Configure the request
+            xhr.open('POST', "/reserveBook/", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            // Set up a callback function to handle the response
+            xhr.onreadystatechange = function () {
+                console.log(xhr.responseText);
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    console.log(xhr.status)
+                    if(xhr.status === 302) {
+                        window.location.href = window.location.origin + "/checkedOutBooks/";
+                    }
+                    else if (xhr.status === 200) {
+                        window.location.href = window.location.origin;
+                    } else {
+                        alert("Password, email, or studentId were incorrect. Try Again")
+                    }
+                }
+            };
+
+            // Send the request with the JSON data
+            xhr.send(jsonDataString);
+        })
+    });
+</script>
