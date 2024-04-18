@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE VIEW usersAndPerms 
 AS SELECT 
     -- user
+    userId,
     firstName,
     lastName,
     studentId,

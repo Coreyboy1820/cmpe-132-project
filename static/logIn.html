@@ -1,10 +1,5 @@
 <!DOCTYPE html>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-<head>
-    <link rel="stylesheet" type="text/css" href="/css/style.css" />
-</head>
-
+{{template "head" .}} 
 
 <div class="row" style="height:100%; text-align: center;">
     <div class="col" name="logInBox" id="logInBox">
@@ -14,32 +9,33 @@
                 <h4>Please Log In Below</h4>
                 <h4>If it's your first time logging in, just enter your Student ID</h4>
             </div>
-            <div class="row"
-                style="border-top: solid; border-width: 1px; border-color: rgb(218, 218, 218);">
+            <div class="row loginInput">
                 <label>Student ID</label>
                 <input type="text" id="studentId">
             </div>
-            <div class="row">
+            <div class="row loginInput">
                 <label>Password</label>
                 <input type="password" id="password">
             </div>
-            <div class="row">
+            <div class="row loginInput">
                 <label>E-Mail</label>
                 <input type="text" id="email">
             </div>
-            <div class="row">
-                <div class="col button" name="cancel" id="logInBoxField">Cancel</div>
-                <div class="col button" name="login" id="logInBoxField">Log In</div>
+            <div class="row loginInput">
+                <button class="btn btn-primary" id="login">Log In</button>
+            </div>
+            <div class="row loginInput">
+                <button class="btn btn-primary" id="cancel">Cancel</button>
             </div>
         </div>
     </div>
 </div>
 <script>
     $(document).ready(function () {
-        $('[name="cancel"]').click(function (e) {
+        $('#cancel').click(function (e) {
             window.location.href = "/";
         })
-        $('[name="login"]').click(function (e) {
+        $('#login').click(function (e) {
 
             var studentId = $("#studentId").val();
             var password = $("#password").val();

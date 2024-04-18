@@ -15,7 +15,7 @@ import (
 )
 
 func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("logIn.html")
+	t, err := template.ParseFiles("static/logIn.html", "static/header.html")
 	if err != nil {
 		log.Println(err)
 	}
@@ -23,7 +23,7 @@ func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, tm)
 }
 
-func login(w http.ResponseWriter, r *http.Request) {
+func Login(w http.ResponseWriter, r *http.Request) {
 	
 	// Parse the JSON request body
 	Credentials := struct {
@@ -71,7 +71,19 @@ func login(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	_ = UpdateLogin(true)
+	err = UpdateLogin(true)
+	if(err != nil) {
+		log.Print(err)
+	}
+}
+
+func Logout(w http.ResponseWriter, r *http.Request) {
+	err := UpdateLogin(false)
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func UpdateLogin(status bool) (err error) {
@@ -79,7 +91,8 @@ func UpdateLogin(status bool) (err error) {
 	_, err = dbutil.DB.Exec(updateStmt, status, userpkg.CurrUser.StudentId)
 	if err != nil {
 		log.Print(err)
+		return
 	}
-	userpkg.CurrUser.LoggedIn = true
+	userpkg.CurrUser.LoggedIn = status
 	return
 }

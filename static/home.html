@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{{template "head" .}} 
+<body>
+    {{template "header" .}}
+    <main>
+        <div class="row bookRowContainer">
+            {{range .Books}}
+                <div class="col bookColContainer" id="{{.BookId}}">
+                    {{ .BookName }}
+                    <br>
+                    <br>
+                    ISBN-10: {{.Isbn}}
+                    <br>
+                    <br>
+                    In Stock: {{.Count}}
+                </div>
+            {{ end }}
+        </div>
+    </main>
+</body>
+<script>
+    $(document).ready(function() {
+    $('.bookColContainer').click(function() {
+        var clickedBookColContainer = $(this);
+        var bookId = clickedBookColContainer.attr("id");
+        
+    });
+});
+</script>

@@ -9,6 +9,7 @@ import (
 )
 
 type User struct {
+	UserId int
 	FirstName string
 	LastName string
 	StudentId string
@@ -40,6 +41,7 @@ func (u User) Read(whereStmt string, args... interface{}) (users []User, err err
     for rows.Next() {
 		user := User{}
 		err = rows.Scan(
+			&user.UserId,
 			&user.FirstName,
 			&user.LastName,
 			&user.StudentId,

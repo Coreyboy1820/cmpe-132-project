@@ -1,15 +1,52 @@
 .header {
-    padding: 10px 16px;
-    background: #555;
-    color: #f1f1f1;
-  }
+  padding: 10px 16px;
+  background: #555;
+  color: #f1f1f1;
+}
 
 .sticky {
-    position: fixed;
-    top: 0;
-    width: 100%
-  }
+  position: sticky;
+  top: 0;
+  width: 100%
+}
+
 div {
-    margin-left: 10px;
-    margin-right: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+main {
+  padding: 20px;
+}
+
+.navbarButton {
+  margin-left: 20px;
+}
+button {
+  max-width: fit-content !important;
+}
+input {
+  max-width: fit-content !important;
+}
+.loginInput {
+  place-content: center;
+  margin-top: 10px;
+}
+
+.bookRowContainer {
+    display: flex;
+    flex-wrap: wrap; /* Allow items to wrap to the next line */
+}
+
+.bookColContainer {
+    border-style: solid;
+    width: fit-content; /* Adjust width as needed */
+    max-width: 11%; /* Adjust max-width as needed */
+    border-radius: 20px;
+    min-width: 10%; /* Adjust min-width as needed */
+    margin: 5px; /* Add margin for spacing between containers */
+}
+
+.hiddenData {
+  display:none;
 }

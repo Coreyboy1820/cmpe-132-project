@@ -35,7 +35,7 @@ func FirstTimeLoginHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Your temporary password is:\n" + tempPassword.String())
 
 	tm := make(map[string]interface{})
-	t, err := template.ParseFiles("firstTimeLogin.html")
+	t, err := template.ParseFiles("static/firstTimeLogin.html", "static/header.html")
 	if err != nil {
 		log.Println(err)
 	}
@@ -73,7 +73,7 @@ func SubmitTempPasword(w http.ResponseWriter, r *http.Request) {
 
 func HandleNewPassword(w http.ResponseWriter, r *http.Request) {
 	tm := make(map[string]interface{})
-	t, err := template.ParseFiles("submit-new-password.html")
+	t, err := template.ParseFiles("static/submit-new-password.html", "static/header.html")
 	if err != nil {
 		log.Println(err)
 	}

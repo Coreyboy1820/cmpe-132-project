@@ -28,11 +28,13 @@ func main() {
 	
 	http.HandleFunc("/logIn/", LoginPageHandler)
 	http.HandleFunc("/", HomeHandler)
-	http.HandleFunc("/signin/", login)
+	http.HandleFunc("/signin/", Login)
+	http.HandleFunc("/logout/", Logout)
 	http.HandleFunc("/firstTimeLogin/", FirstTimeLoginHandler)
 	http.HandleFunc("/submitTemporaryPassword/", SubmitTempPasword)
 	http.HandleFunc("/newPassword/", HandleNewPassword)
 	http.HandleFunc("/submitNewPassword/", SubmitNewPassword)
+	http.HandleFunc("/checkoutBook/", CheckoutBook)
 
 	log.Println("Starting server on localhost:8080")
 	http.ListenAndServe(":8080", nil)
