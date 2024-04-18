@@ -35,6 +35,8 @@ func main() {
 	http.HandleFunc("/newPassword/", HandleNewPassword)
 	http.HandleFunc("/submitNewPassword/", SubmitNewPassword)
 	http.HandleFunc("/checkoutBook/", CheckoutBook)
+	http.HandleFunc("/addToCart/", AddToCart)
+	http.HandleFunc("/cart/", HandleCart)
 
 	log.Println("Starting server on localhost:8080")
 	http.ListenAndServe(":8080", nil)
