@@ -41,6 +41,8 @@ func main() {
 	http.HandleFunc("/checkout/", Checkout)
 	http.HandleFunc("/checkedOutBooks/", HandleCheckedOutBooks)
 	http.HandleFunc("/reserveBook/", ReserveBook)
+	http.HandleFunc("/librarianPage/", HandleLibrarianPage)
+	http.HandleFunc("/addNewBook/", AddNewBook)
 
 	log.Println("Starting server on localhost:8080")
 	http.ListenAndServe(":8080", nil)

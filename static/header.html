@@ -13,7 +13,6 @@
 {{ define "header" }}
 <header class="sticky">
     <div class="row">
-            {{ $cartSize := .BooksInCartCount }}
             {{if not .CurrUser.LoggedIn}}
             <button class="btn btn-primary navbarButton" id="loginButton">
                 Log In
@@ -23,10 +22,15 @@
                 Logout
             </button>
             <button class="btn btn-primary navbarButton" id="navCart">
-                Cart ({{$cartSize}})
+                Cart ({{.BooksInCartCount}})
             </button>
             <button class="btn btn-primary navbarButton" id="checkedOutBooks">
                 Checked Out Books
+            </button>
+            {{end}}
+            {{ if .CurrUser.AddBooks}}
+            <button class="btn btn-primary navbarButton" id="navLibrarian">
+                Librarian Page
             </button>
             {{end}}
             <button class="btn btn-primary navbarButton" id="navHome">
@@ -54,6 +58,9 @@
         });
         $('#checkedOutBooks').click(function () {
             window.location.href = "/checkedOutBooks/";
+        });
+        $('#navLibrarian').click(function () {
+            window.location.href = "/librarianPage/";
         });
     });
 </script>

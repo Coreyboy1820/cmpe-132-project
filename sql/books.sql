@@ -30,6 +30,15 @@ CREATE TABLE IF NOT EXISTS libraryFunds (
     funds INTEGER
 );
 
+CREATE TABLE IF NOT EXISTS buyRequests (
+    bookLink TEXT,
+    bookName TEXT,
+    isbn TEXT,
+    bookCost INTEGER,
+    bookCount INTEGER,
+    approved BOOLEAN DEFAULT false
+);
+
 CREATE VIEW booksInCart 
 AS SELECT 
     cartId,

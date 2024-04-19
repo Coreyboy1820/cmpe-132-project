@@ -18,7 +18,7 @@ import (
 func FirstTimeLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	if userpkg.CurrUser.PasswordSet {
-		http.Redirect(w, r, "http://localhost:8080/", http.StatusSeeOther)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 	tempPassword, err := rand.Int(rand.Reader, big.NewInt(100000000))
@@ -35,7 +35,7 @@ func FirstTimeLoginHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Your temporary password is:\n" + tempPassword.String())
 
 	tm := make(map[string]interface{})
-	t, err := template.ParseFiles("static/firstTimeLogin.html", "static/header.html")
+	t, err := template.ParseFiles("static/first-time-login.html", "static/header.html")
 	if err != nil {
 		log.Println(err)
 	}
