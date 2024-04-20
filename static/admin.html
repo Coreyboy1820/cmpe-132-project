@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{{template "head" .}} 
+<body>
+    {{template "header" .}}
+    <main>
+        <table>
+            <tr>
+              <th>Last Name</th>
+              <th>First Name</th>
+              <th>Student ID</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Edit Role</th>
+            </tr>
+            {{range .Users}}
+            <tr>
+              <td>{{.LastName}}</td>
+              <td>{{.FirstName}}</td>
+              <td>{{.StudentId}}</td>
+              <td>{{.Email}}</td>
+              <td>{{.RoleName}}</td>
+              <td>
+                <button class="btn btn-primary" onclick="toggleOptionMenu(this)">Edit Role</button>
+                <div class="option-menu">
+                    <!-- Add your option menu content here -->
+                    <button class="btn btn-warning" onclick="SubmitRoleUpdate(this)" id="{{.UserId}}">Admin</button>
+                    <button class="btn btn-warning" onclick="SubmitRoleUpdate(this)" id="{{.UserId}}">Librarian</button>
+                    <button class="btn btn-warning" onclick="SubmitRoleUpdate(this)" id="{{.UserId}}">Professor</button>
+                    <button class="btn btn-warning" onclick="SubmitRoleUpdate(this)" id="{{.UserId}}">Student</button>
+                </div>
+            </td>
+            </tr>
+            {{end}}
+          </table>
+    </main>
+</body>
+<script>
+    function toggleOptionMenu(button) {
+        // Find the next sibling element which is the option menu
+        var optionMenu = button.nextElementSibling;
+    
+        // Toggle the display property of the option menu
+        if (optionMenu.style.display === "none" || optionMenu.style.display === "") {
+            optionMenu.style.display = "block";
+        } else {
+            optionMenu.style.display = "none";
+        }
+    }
+    function SubmitRoleUpdate(div) {
+        var role = div.textContent;
+        var userId = div.id;
+        var json = {"role":role, "userId":parseInt(userId)};
+            // Convert the data to a JSON string
+            var jsonDataString = JSON.stringify(json);
+
+            // Create a new XMLHttpRequest object
+            var xhr = new XMLHttpRequest();
+
+            // Configure the request
+            xhr.open('POST', "/updateRole/", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            // Set up a callback function to handle the response
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        window.location.href = "/admin/";
+                    } else {
+                        alert(xhr.responseText)
+                    }
+                }
+            };
+
+            // Send the request with the JSON data
+            xhr.send(jsonDataString);
+    }
+    </script>

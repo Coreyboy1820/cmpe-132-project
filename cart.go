@@ -18,8 +18,9 @@ import (
 func HandleCart(w http.ResponseWriter, r *http.Request) {
 	// check for correct perms
 	if(!userpkg.CurrUser.CheckoutBook) {
-		log.Print("You do not have permissions for this")
-		w.WriteHeader(http.StatusUnauthorized)
+		errString := "You do not have permissions for this"
+		log.Print(errString)
+		http.Error(w, errString, http.StatusUnauthorized)
 		return
 	}
 	tm := make(map[string]interface{})
@@ -29,13 +30,16 @@ func HandleCart(w http.ResponseWriter, r *http.Request) {
 
 	booksInCart, err := dbQuerries.BooksInCart{}.Read("WHERE userId=?", userpkg.CurrUser.UserId)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Print(err)
+		return
 	}
 	tm["BooksInCart"] = booksInCart
 	tm["BooksInCartCount"] = len(booksInCart)
 
 	t, err := template.ParseFiles("static/cart.html", "static/header.html")
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		panic(err.Error())
 	}
 	t.Execute(w, tm)
@@ -44,8 +48,9 @@ func HandleCart(w http.ResponseWriter, r *http.Request) {
 func DeleteFromCart(w http.ResponseWriter, r *http.Request) {
 	// check for correct perms
 	if(!userpkg.CurrUser.CheckoutBook) {
-		log.Print("You do not have permissions for this")
-		w.WriteHeader(http.StatusUnauthorized)
+		errString := "You do not have permissions for this"
+		log.Print(errString)
+		http.Error(w, errString, http.StatusUnauthorized)
 		return
 	}
 
@@ -64,12 +69,13 @@ func DeleteFromCart(w http.ResponseWriter, r *http.Request) {
 	books, err := dbQuerries.Book{}.Read("WHERE bookId=?", Cart.BookId)
 	if err != nil {
 		log.Print(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if len(books) == 0 {
+		errString := "book does not exist"
 		log.Print("book does not exist")
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, errString, http.StatusBadRequest)
 		return
 	} 
 	requestedBook := books[0]
@@ -79,7 +85,7 @@ func DeleteFromCart(w http.ResponseWriter, r *http.Request) {
 	_, err = dbutil.DB.Exec(updateStmt, (requestedBook.Count+1), Cart.BookId)
 	if err != nil {
 		log.Print(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -88,7 +94,7 @@ func DeleteFromCart(w http.ResponseWriter, r *http.Request) {
 	_, err = dbutil.DB.Exec(deleteStmt, userpkg.CurrUser.UserId, Cart.CartId)
 	if err != nil {
 		log.Print(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -99,6 +105,8 @@ func Checkout(w http.ResponseWriter, r *http.Request) {
 	booksInCart, err := dbQuerries.BooksInCart{}.Read("WHERE userId=?", userpkg.CurrUser.UserId)
 	if err != nil {
 		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	// Then delete the book from the cart based on the cartId
@@ -106,7 +114,7 @@ func Checkout(w http.ResponseWriter, r *http.Request) {
 	_, err = dbutil.DB.Exec(deleteStmt, userpkg.CurrUser.UserId)
 	if err != nil {
 		log.Print(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -121,7 +129,7 @@ func Checkout(w http.ResponseWriter, r *http.Request) {
 		_, err = dbutil.DB.Exec(insertStmt, userpkg.CurrUser.UserId, book.BookId, currentTimeAsString, futureTimeAsString)
 		if err != nil {
 			log.Print(err)
-			w.WriteHeader(http.StatusInternalServerError)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}

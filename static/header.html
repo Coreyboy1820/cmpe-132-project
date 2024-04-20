@@ -14,24 +14,29 @@
 <header class="sticky">
     <div class="row">
             {{if not .CurrUser.LoggedIn}}
-            <button class="btn btn-primary navbarButton" id="loginButton">
-                Log In
-            </button>
+                <button class="btn btn-primary navbarButton" id="loginButton">
+                    Log In
+                </button>
             {{else}}
-            <button class="btn btn-primary navbarButton" id="logoutButton">
-                Logout
-            </button>
-            <button class="btn btn-primary navbarButton" id="navCart">
-                Cart ({{.BooksInCartCount}})
-            </button>
-            <button class="btn btn-primary navbarButton" id="checkedOutBooks">
-                Checked Out Books
-            </button>
-            {{end}}
-            {{ if .CurrUser.AddBooks}}
-            <button class="btn btn-primary navbarButton" id="navLibrarian">
-                Librarian Page
-            </button>
+                <button class="btn btn-primary navbarButton" id="logoutButton">
+                    Logout
+                </button>
+                <button class="btn btn-primary navbarButton" id="navCart">
+                    Cart ({{.BooksInCartCount}})
+                </button>
+                <button class="btn btn-primary navbarButton" id="checkedOutBooks">
+                    Checked Out Books
+                </button>
+                {{ if .CurrUser.AddBooks}}
+                    <button class="btn btn-primary navbarButton" id="navLibrarian">
+                        Librarian Page
+                    </button>
+                {{end}}
+                {{ if .CurrUser.UpdateUser}}
+                    <button class="btn btn-primary navbarButton" id="navAdmin">
+                        Admin Page
+                    </button>
+                {{end}}
             {{end}}
             <button class="btn btn-primary navbarButton" id="navHome">
                 Home
@@ -61,6 +66,9 @@
         });
         $('#navLibrarian').click(function () {
             window.location.href = "/librarianPage/";
+        });
+        $('#navAdmin').click(function () {
+            window.location.href = "/admin/";
         });
     });
 </script>

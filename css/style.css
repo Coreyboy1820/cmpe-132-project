@@ -54,3 +54,22 @@ input {
 .note {
   text-align: center;
 }
+
+table {
+  border-collapse: collapse; /* Collapse border spacing */
+  border: 2px solid black; /* Set the border style */
+  margin: 0 auto; /* Center the table horizontally */
+}
+
+th, td {
+  border: 1px solid black; /* Set border for table cells */
+  padding: 8px; /* Add padding for better appearance */
+}
+
+.option-menu {
+  display: none; /* Hide the option menu by default */
+  background-color: #f9f9f9;
+  min-width: 100px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 1; /* Ensure the menu is above other elements */
+}

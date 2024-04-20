@@ -15,8 +15,9 @@ import (
 func HandleCheckedOutBooks(w http.ResponseWriter, r *http.Request) {
 	// check for correct perms
 	if !userpkg.CurrUser.CheckoutBook {
-		log.Print("You do not have permissions for this")
-		w.WriteHeader(http.StatusUnauthorized)
+		errString := "You do not have permissions for this"
+		log.Print(errString)
+		http.Error(w, errString, http.StatusUnauthorized)
 		return
 	}
 	tm := make(map[string]interface{})
@@ -27,6 +28,7 @@ func HandleCheckedOutBooks(w http.ResponseWriter, r *http.Request) {
 	booksInCart, err := dbQuerries.BooksInCart{}.Read("WHERE userId=?", userpkg.CurrUser.UserId)
 	if err != nil {
 		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	tm["BooksInCartCount"] = len(booksInCart)
@@ -36,6 +38,7 @@ func HandleCheckedOutBooks(w http.ResponseWriter, r *http.Request) {
 	checkedOutBooks, err := dbQuerries.BooksAndCheckedOut{}.Read("WHERE userId=?", userpkg.CurrUser.UserId)
 	if err != nil {
 		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	tm["CheckedOutBooks"] = checkedOutBooks
@@ -43,6 +46,7 @@ func HandleCheckedOutBooks(w http.ResponseWriter, r *http.Request) {
 
 	t, err := template.ParseFiles("static/checked-out-books.html", "static/header.html")
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		panic(err.Error())
 	}
 	t.Execute(w, tm)
@@ -52,8 +56,9 @@ func HandleCheckedOutBooks(w http.ResponseWriter, r *http.Request) {
 func ReserveBook(w http.ResponseWriter, r *http.Request) {
 	// check for correct perms
 	if !userpkg.CurrUser.ReserveBooks {
-		log.Print("You do not have permissions for this")
-		w.WriteHeader(http.StatusUnauthorized)
+		errString := "You do not have permissions for this"
+		log.Print(errString)
+		http.Error(w, errString, http.StatusUnauthorized)
 		return
 	}
 
@@ -62,6 +67,7 @@ func ReserveBook(w http.ResponseWriter, r *http.Request) {
 		StudentId string `json:"studentId"`
 		CheckedOutBookId   int `json:"checkedOutBooksId"`
 	}{}
+	
 	err := json.NewDecoder(r.Body).Decode(&CheckedOutBook)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -70,12 +76,12 @@ func ReserveBook(w http.ResponseWriter, r *http.Request) {
 	users, err := userpkg.User{}.Read("WHERE studentId=?", CheckedOutBook.StudentId)
 	if err != nil {
 		log.Print(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if len(users) == 0 {
-		log.Print("user does not exist")
-		w.WriteHeader(http.StatusBadRequest)
+		errString := "user does not exist"
+		http.Error(w, errString, http.StatusBadRequest)
 		return
 	}
 
@@ -85,7 +91,7 @@ func ReserveBook(w http.ResponseWriter, r *http.Request) {
 	_, err = dbutil.DB.Exec(updateStmt, studentToTransferBookTo.UserId, CheckedOutBook.CheckedOutBookId)
 	if err != nil {
 		log.Print(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

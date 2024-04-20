@@ -17,7 +17,8 @@ import (
 func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("static/logIn.html", "static/header.html")
 	if err != nil {
-		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		panic(err.Error())
 	}
 	tm := make(map[string]interface{})
 	t.Execute(w, tm)
@@ -40,21 +41,16 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	users, err := userpkg.User{}.Read(whereStmt, Credentials.StudentId);
 	if err != nil {
 		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// make sure the studentId was a valid student Id
 	if len(users) == 0 {
+		errString := "login unsuccessful"
+		log.Print(errString)
+		http.Error(w, errString, http.StatusUnauthorized)
 		userpkg.CurrUser = userpkg.User{}
-		log.Print("login unsuccessful")
-		// TODO: throw some error here that login was unsuccesful
-		return
-	}
-	
-	// make sure the student Id isn't duplicated
-	if(len(users) > 1) {
-		userpkg.CurrUser = userpkg.User{}
-		log.Print("Unique identifier did not hold fix the database")
 		return
 	}
 
@@ -67,19 +63,21 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	// now we can check the password and email to make sure they line up with the studentId
 	if(userpkg.CurrUser.Email != Credentials.Email) {
-		w.WriteHeader(http.StatusUnauthorized)
+		http.Error(w, "Email is incorrect", http.StatusUnauthorized)
 		return
 	}
 
 	hashedPassword := crypto.HashPassword(Credentials.Password+userpkg.CurrUser.Salt)
 	if(hashedPassword != userpkg.CurrUser.PasswordHash) {
-		w.WriteHeader(http.StatusUnauthorized)
+		http.Error(w, "Password is incorrect", http.StatusUnauthorized)
 		return
 	}
 	
 	err = UpdateLogin(true)
 	if(err != nil) {
 		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -87,9 +85,10 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	err := UpdateLogin(false)
 	if err != nil {
 		log.Print(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func UpdateLogin(status bool) (err error) {

@@ -43,6 +43,8 @@ func main() {
 	http.HandleFunc("/reserveBook/", ReserveBook)
 	http.HandleFunc("/librarianPage/", HandleLibrarianPage)
 	http.HandleFunc("/addNewBook/", AddNewBook)
+	http.HandleFunc("/admin/", HandleAdmin)
+	http.HandleFunc("/updateRole/", UpdateRole)
 
 	log.Println("Starting server on localhost:8080")
 	http.ListenAndServe(":8080", nil)

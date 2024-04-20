@@ -16,8 +16,9 @@ import(
 
 func HandleLibrarianPage(w http.ResponseWriter, r *http.Request){
 	if(!userpkg.CurrUser.LoggedIn || !userpkg.CurrUser.AddBooks) {
-		log.Print("You do not have access")
-		w.WriteHeader(http.StatusUnauthorized)
+		errString := "You do not have access"
+		log.Print(errString)
+		http.Error(w, errString, http.StatusUnauthorized)
 		return
 	}
 	var err error
@@ -27,17 +28,22 @@ func HandleLibrarianPage(w http.ResponseWriter, r *http.Request){
 	booksInCart, err := dbQuerries.BooksInCart{}.Read("WHERE userId=?", userpkg.CurrUser.UserId)
 	if err != nil {
 		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	tm["BooksInCartCount"] = len(booksInCart)
 
 	buyRequests, err := dbQuerries.BuyRequests{}.Read("ORDER BY approved")
 	if err != nil {
 		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	tm["BuyRequests"] = buyRequests
 
 	t, err := template.ParseFiles("static/librarian-page.html", "static/header.html")
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		panic(err.Error())
 	}
 	t.Execute(w, tm)
@@ -48,7 +54,9 @@ func AddNewBook(w http.ResponseWriter, r *http.Request){
 	// Parse form data
 	err := r.ParseForm()
 	if err != nil {
-		http.Error(w, "Failed to parse form data", http.StatusBadRequest)
+		errString := "Failed to parse form data"
+		log.Print(errString)
+		http.Error(w, errString, http.StatusBadRequest)
 		return
 	}
 	// Retrieve form values
@@ -62,7 +70,7 @@ func AddNewBook(w http.ResponseWriter, r *http.Request){
 	err = InsertNewBuyRequest(link, bookName, isbn, cost, quantity, true)
 	if err != nil {
 		log.Print(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -81,7 +89,7 @@ func AddNewBook(w http.ResponseWriter, r *http.Request){
 	fundsAvailable, err := UpdateFunds(cost, quantity, "Book Fund")
 	if err != nil {
 		log.Print(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if(!fundsAvailable) {
@@ -92,7 +100,8 @@ func AddNewBook(w http.ResponseWriter, r *http.Request){
 	err = InsertNewBook(bookName, quantity, isbn)
 	if err != nil {
 		log.Print(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	http.Redirect(w, r, "/librarianPage/", http.StatusSeeOther)
@@ -106,7 +115,8 @@ func UpdateFunds(cost string, quantity string, fundName string) (fundsAvailable 
 		return
 	}
 	if len(funds) == 0 {
-		log.Print("Fund does not exist")
+		errString := "Fund does not exist"
+		log.Print(errString)
 		return
 	}
 	fundToUpdate := funds[0]

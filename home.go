@@ -24,16 +24,21 @@ func HomeHandler(w http.ResponseWriter, r *http.Request){
 	tm["Books"], err =dbQuerries.Book{}.Read("")
 	if err != nil {
 		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	booksInCart, err := dbQuerries.BooksInCart{}.Read("WHERE userId=?", userpkg.CurrUser.UserId)
 	if err != nil {
 		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	tm["BooksInCartCount"] = len(booksInCart)
 
 	t, err := template.ParseFiles("static/home.html", "static/header.html")
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		panic(err.Error())
 	}
 	t.Execute(w, tm)
@@ -47,25 +52,25 @@ func AddToCart(w http.ResponseWriter, r *http.Request){
 		err := json.NewDecoder(r.Body).Decode(&book)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
-			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		// Then we querry to check if the book is in stock or exists
 		books, err := dbQuerries.Book{}.Read("WHERE bookId=?", book.BookId)
 		if err != nil {
 			log.Print(err)
-			w.WriteHeader(http.StatusInternalServerError)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		if len(books) == 0 {
-			log.Print("book does not exist")
-			w.WriteHeader(http.StatusBadRequest)
+			errString := "book does not exist"
+			http.Error(w, errString, http.StatusBadRequest)
 			return
 		} 
 		requestedBook := books[0]
 		if books[0].Count == 0 {
-			log.Print("Book out of stock")
-			w.WriteHeader(http.StatusBadRequest)
+			errString := "Book out of stock"
+			log.Print(errString)
+			http.Error(w, errString, http.StatusBadRequest)
 			return
 		}
 
@@ -74,7 +79,7 @@ func AddToCart(w http.ResponseWriter, r *http.Request){
 		_, err = dbutil.DB.Exec(updateStmt, (requestedBook.Count-1), book.BookId)
 		if err != nil {
 			log.Print(err)
-			w.WriteHeader(http.StatusInternalServerError)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
@@ -83,7 +88,7 @@ func AddToCart(w http.ResponseWriter, r *http.Request){
 		_, err = dbutil.DB.Exec(insertStmt, userpkg.CurrUser.UserId, book.BookId)
 		if err != nil {
 			log.Print(err)
-			w.WriteHeader(http.StatusInternalServerError)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.WriteHeader(http.StatusOK)

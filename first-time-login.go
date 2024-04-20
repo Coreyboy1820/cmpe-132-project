@@ -37,7 +37,8 @@ func FirstTimeLoginHandler(w http.ResponseWriter, r *http.Request) {
 	tm := make(map[string]interface{})
 	t, err := template.ParseFiles("static/first-time-login.html", "static/header.html")
 	if err != nil {
-		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		panic(err.Error())
 	}
 	t.Execute(w, tm)
 }
@@ -57,14 +58,16 @@ func SubmitTempPasword(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	if len(users) < 1 {
-		log.Print("studentId: ", userpkg.CurrUser.StudentId)
-		log.Print("student does not exist")
+	if len(users) == 0 {
+		errString := "student does not exist"
+		log.Print(errString)
+		http.Error(w, errString, http.StatusBadRequest)
 		return
 	}
 	user := users[0]
 	hashedTempPassword := crypto.HashPassword(tempPassword.TempPassword + user.Salt)
 	if user.PasswordHash != hashedTempPassword {
+		http.Error(w, "Incorrect Password", http.StatusUnauthorized)
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -76,6 +79,8 @@ func HandleNewPassword(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("static/submit-new-password.html", "static/header.html")
 	if err != nil {
 		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	t.Execute(w, tm)
 }
@@ -98,6 +103,8 @@ func SubmitNewPassword(w http.ResponseWriter, r *http.Request) {
 	_, err = dbutil.DB.Exec(updateStmt, true, userpkg.CurrUser.StudentId)
 	if err != nil {
 		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	w.WriteHeader(http.StatusFound)
 }

@@ -39,7 +39,6 @@
 
             // Set up a callback function to handle the response
             xhr.onreadystatechange = function () {
-                console.log(xhr.responseText);
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     console.log(xhr.status)
                     if(xhr.status === 401) {
@@ -52,7 +51,7 @@
                         // Request was successful, handle the response here
                     } else {
                         // Request failed
-                        console.error('Request failed: ' + xhr.status);
+                        console.error(xhr.responseText);
                     }
                 }
             };

@@ -54,7 +54,6 @@
 
             // Set up a callback function to handle the response
             xhr.onreadystatechange = function () {
-                console.log(xhr.responseText);
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     console.log(xhr.status)
                     if(xhr.status === 302) {
@@ -63,7 +62,7 @@
                     else if (xhr.status === 200) {
                         window.location.href = window.location.origin;
                     } else {
-                        alert("Password, email, or studentId were incorrect. Try Again")
+                        alert(xhr.responseText)
                     }
                 }
             };
