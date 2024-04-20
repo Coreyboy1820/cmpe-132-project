@@ -14,6 +14,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// HandleAdmin will render the admin page
 
 func HandleAdmin(w http.ResponseWriter, r *http.Request) {
 	// check for correct perms
@@ -55,7 +56,10 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, tm)
 }
 
+// UpdateRole will allow admins to change roles of themselves and others
+
 func UpdateRole(w http.ResponseWriter, r *http.Request) {
+	// parse json
 	UserToUpdate := struct {
 		UserId int `json:"userId"`
 		Role string `json:"role"`
@@ -66,6 +70,9 @@ func UpdateRole(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	// current user wont be updated if they remain logged in after changing themselves, so update the current users data if
+	// they edit them selves
 
 	if userpkg.CurrUser.UserId == UserToUpdate.UserId {
 		var users []userpkg.User
@@ -83,13 +90,16 @@ func UpdateRole(w http.ResponseWriter, r *http.Request) {
 		}
 		userpkg.CurrUser = users[0]
 	}
+
+	// validate the person has correct permissions to update
 	if !userpkg.CurrUser.UpdateUser {
 		errString := "You do not have permissions for this"
 		http.Error(w, errString, http.StatusUnauthorized)
 		log.Print(errString)
 		return
 	}
-
+	
+	// we then need to find what roleId belongs to the role name so we can switch it in the user table
 	roles, err := dbQuerries.Roles{}.Read("WHERE roleName=?", UserToUpdate.Role)
 	if err != nil {
 		log.Print(err)
@@ -103,7 +113,8 @@ func UpdateRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	role := roles[0]
-	// then we update the stock to make sure it can't be further reduced
+
+	// finally we update the user
 	updateStmt := "UPDATE users SET roleId=? WHERE userId=?"
 	_, err = dbutil.DB.Exec(updateStmt, role.RoleId, UserToUpdate.UserId)
 	if err != nil {

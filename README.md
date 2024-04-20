@@ -1,6 +1,5 @@
 # cmpe-132-project
 ---
-This application is not meant for use by multiple clients and will mess up if you try to have multiple sessions open
 
 ## Webstack
 ---
@@ -26,6 +25,10 @@ go mod init;
 go build .; ./cmpe-132-project.exe;
 ```
 5. Now navigate to the following link [Website](http://localhost:8080/)
+
+6. First all you need to enter is your studentId then it will take you to a page to enter your temp password
+
+7. When you get to that page, an "email" will be sent to your email, in order to simulate this I just print the temp code to the console which you can copy and paste
 
 ## Examples of Working Product
 ---

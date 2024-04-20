@@ -15,6 +15,8 @@ import (
 
 )
 
+/// HandleCart is used for rendering the Cart page in the tool
+
 func HandleCart(w http.ResponseWriter, r *http.Request) {
 	// check for correct perms
 	if(!userpkg.CurrUser.CheckoutBook) {
@@ -45,6 +47,8 @@ func HandleCart(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, tm)
 }
 
+/// Delete from Cart is responsible for removing an item from its cart
+
 func DeleteFromCart(w http.ResponseWriter, r *http.Request) {
 	// check for correct perms
 	if(!userpkg.CurrUser.CheckoutBook) {
@@ -72,7 +76,8 @@ func DeleteFromCart(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if len(books) == 0 {
+	bookInStock := (len(books) != 0)
+	if !bookInStock {
 		errString := "book does not exist"
 		log.Print("book does not exist")
 		http.Error(w, errString, http.StatusBadRequest)
@@ -101,7 +106,11 @@ func DeleteFromCart(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+/// Checkout will take all the books in the users cart and checks them out
+
 func Checkout(w http.ResponseWriter, r *http.Request) {
+
+	// Get all books in the current users cart
 	booksInCart, err := dbQuerries.BooksInCart{}.Read("WHERE userId=?", userpkg.CurrUser.UserId)
 	if err != nil {
 		log.Print(err)

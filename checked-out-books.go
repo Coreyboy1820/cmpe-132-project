@@ -12,6 +12,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+/// HandleCheckedOutBooks will render all of the books that user has checked out
+
 func HandleCheckedOutBooks(w http.ResponseWriter, r *http.Request) {
 	// check for correct perms
 	if !userpkg.CurrUser.CheckoutBook {
@@ -52,7 +54,8 @@ func HandleCheckedOutBooks(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, tm)
 }
 
-// despite its name, reserve a book only works after a professor has already checked that book out, it allows them to select students to check out the book for them
+// ReserveBook despite its name, reserve a book only works after a professor has already checked that book out, it allows them to select students to check out the book for them
+
 func ReserveBook(w http.ResponseWriter, r *http.Request) {
 	// check for correct perms
 	if !userpkg.CurrUser.ReserveBooks {
@@ -67,12 +70,14 @@ func ReserveBook(w http.ResponseWriter, r *http.Request) {
 		StudentId string `json:"studentId"`
 		CheckedOutBookId   int `json:"checkedOutBooksId"`
 	}{}
-	
 	err := json.NewDecoder(r.Body).Decode(&CheckedOutBook)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	// We need to get the userId since it is the foreign key we use in the checkedoutbooks table
+
 	users, err := userpkg.User{}.Read("WHERE studentId=?", CheckedOutBook.StudentId)
 	if err != nil {
 		log.Print(err)

@@ -11,6 +11,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+/// CheckoutBook will make sure the user has the correct perms to checkout a book and will the check it out
+
 func CheckoutBook(w http.ResponseWriter, r *http.Request) {
 	if(!userpkg.CurrUser.LoggedIn) {
 		w.WriteHeader(http.StatusUnauthorized)

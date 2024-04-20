@@ -14,6 +14,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+/// LoginPageHandler will render the login page
+
 func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("static/logIn.html", "static/header.html")
 	if err != nil {
@@ -23,6 +25,8 @@ func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 	tm := make(map[string]interface{})
 	t.Execute(w, tm)
 }
+
+// Login will make sure the information inputted to all the fields matches what is in the database and signs the user in
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	
@@ -61,12 +65,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// now we can check the password and email to make sure they line up with the studentId
+	// check if email matches
 	if(userpkg.CurrUser.Email != Credentials.Email) {
 		http.Error(w, "Email is incorrect", http.StatusUnauthorized)
 		return
 	}
-
+	// check if password matches
 	hashedPassword := crypto.HashPassword(Credentials.Password+userpkg.CurrUser.Salt)
 	if(hashedPassword != userpkg.CurrUser.PasswordHash) {
 		http.Error(w, "Password is incorrect", http.StatusUnauthorized)
@@ -81,6 +85,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+/// Logout will log the user out
+
 func Logout(w http.ResponseWriter, r *http.Request) {
 	err := UpdateLogin(false)
 	if err != nil {
@@ -90,6 +96,15 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+/// UpdateLogin can either login or logout the user
+
+/*
+	params:
+		status - a boolean, true to login, false to logout
+	returns:
+		err - an error if one is thrown
+*/
 
 func UpdateLogin(status bool) (err error) {
 	updateStmt := "UPDATE users SET loggedIn=? WHERE studentId=?"

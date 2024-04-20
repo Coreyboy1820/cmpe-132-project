@@ -14,6 +14,8 @@ import(
 
 )
 
+/// HandleLibrarianPage makes sure the user has the credentials to be on the page then renders the librarian page
+
 func HandleLibrarianPage(w http.ResponseWriter, r *http.Request){
 	if(!userpkg.CurrUser.LoggedIn || !userpkg.CurrUser.AddBooks) {
 		errString := "You do not have access"
@@ -49,6 +51,8 @@ func HandleLibrarianPage(w http.ResponseWriter, r *http.Request){
 	t.Execute(w, tm)
 }
 
+/// AddNewBook simulates an email exchange, again in the console, of a librarian requesting to add a book to the library,
+/// 		   it will also check if the library has the funds to buy the book and will then add the book to the home page
 
 func AddNewBook(w http.ResponseWriter, r *http.Request){
 	// Parse form data
@@ -107,6 +111,19 @@ func AddNewBook(w http.ResponseWriter, r *http.Request){
 	http.Redirect(w, r, "/librarianPage/", http.StatusSeeOther)
 }
 
+/// UpdateFunds alows for the decrease or increase of money in the different funds the library may have
+
+/*
+	params:
+		cost - the cost per book
+		quantity - the number of books to buy
+		fundName - the name of the fund to take the total amount out of
+	returns:
+		fundsAvailable - a boolean indicating whether or not the fund requested has enough money for the purchase
+		err - an error if one is thrown
+	
+*/
+
 func UpdateFunds(cost string, quantity string, fundName string) (fundsAvailable bool, err error){
 
 	funds, err := dbQuerries.LibraryFunds{}.Read("WHERE nameOfFund=?", fundName)
@@ -150,6 +167,17 @@ func UpdateFunds(cost string, quantity string, fundName string) (fundsAvailable 
 	return
 }
 
+/// InsertNewBook will insert a new book into the library to be checked out by other students
+
+/*
+	params:
+		bookName - the name of the book to insert into the database
+		bookCount - the quantity of books to be added to the library
+		isbn - the isbn of the book
+	returns:
+		err - an error if one is thrown
+*/
+
 func InsertNewBook(bookName string, bookCount string, isbn string) (err error){
 	insertStatement := "INSERT INTO books (bookName, count, isbn) VALUES (?, ?, ?)"
 	_, err = dbutil.DB.Exec(insertStatement, bookName, bookCount, isbn)
@@ -159,6 +187,18 @@ func InsertNewBook(bookName string, bookCount string, isbn string) (err error){
 	}
 	return
 }
+
+/// InsertNewBuyRequest will insert a buy request into the database when the librarian requests
+
+/*
+	params:
+		link - the link to where to buy the book at
+		bookName - the name of the book
+		isbn - the isbn of the book 
+		cost - the cost of each book 
+		amount - quantity of books requested
+		status - the status of the request
+*/
 
 func InsertNewBuyRequest(link string, bookName string, isbn string, cost string, amount string, status bool) (err error) {
 	// finally, we insert the book into the cart
