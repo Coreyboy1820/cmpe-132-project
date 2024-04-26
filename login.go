@@ -64,6 +64,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusFound)
 		return
 	}
+	if(!userpkg.CurrUser.Active) {
+		errString := "User is no longer active, can't sign into this account"
+		log.Print(errString)
+		http.Error(w, errString, http.StatusUnauthorized)
+		userpkg.CurrUser = userpkg.User{}
+		return
+	}
 
 	// check if email matches
 	if(userpkg.CurrUser.Email != Credentials.Email) {

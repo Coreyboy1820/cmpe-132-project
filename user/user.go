@@ -27,6 +27,7 @@ type User struct {
 	CreateUser bool
 	UpdateUser bool
 	DeleteUser bool
+	Active bool
 };
 
 func (u User) Read(whereStmt string, args... interface{}) (users []User, err error) {
@@ -50,6 +51,7 @@ func (u User) Read(whereStmt string, args... interface{}) (users []User, err err
 			&user.Email,
 			&user.PasswordSet,
 			&user.LoggedIn,
+			&user.Active,
 			&user.RoleName,
 			&user.CheckoutBook,
 			&user.CheckinBook,

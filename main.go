@@ -45,6 +45,7 @@ func main() {
 	http.HandleFunc("/addNewBook/", AddNewBook)
 	http.HandleFunc("/admin/", HandleAdmin)
 	http.HandleFunc("/updateRole/", UpdateRole)
+	http.HandleFunc("/deleteUser/", DeleteUser)
 
 	log.Println("Starting server on localhost:8080")
 	http.ListenAndServe(":8080", nil)

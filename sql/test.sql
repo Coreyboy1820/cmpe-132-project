@@ -9,6 +9,7 @@ INSERT INTO roles (permsId, roleName) VALUES (3, 'Librarian');
 INSERT INTO roles (permsId, roleName) VALUES (4, 'Admin');
 
 INSERT INTO users (roleId, firstName, lastName, studentId, email) VALUES (4, 'Corey', 'Kelley', '014294501', 'corey.kelley@sjsu.edu');
+INSERT INTO users (roleId, firstName, lastName, studentId, email) VALUES (4, 'Corey1', 'Kelley1', '014294502', 'corey1.kelley1@sjsu.edu');
 
 INSERT INTO books (bookName, count, isbn) VALUES ("Creating a Web Site: Design and Build Your First Site!", 10, "1119376513");
 INSERT INTO books (bookName, count, isbn) VALUES ("Creating a Web Site: Design and Build Your First Site!", 20, "1119376514");

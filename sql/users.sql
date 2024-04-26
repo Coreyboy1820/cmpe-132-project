@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS users (
     salt TEXT DEFAULT "",
     passwordSet BOOLEAN DEFAULT false,
     email TEXT,
-    loggedIn BOOLEAN DEFAULT false 
+    loggedIn BOOLEAN DEFAULT false ,
+    active BOOLEAN DEFAULT true
 );
 
 CREATE VIEW usersAndPerms 
@@ -45,6 +46,7 @@ AS SELECT
     email,
     passwordSet,
     loggedIn,
+    active,
 
     -- roles
     roleName,

@@ -71,26 +71,6 @@ func UpdateRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// current user wont be updated if they remain logged in after changing themselves, so update the current users data if
-	// they edit them selves
-
-	if userpkg.CurrUser.UserId == UserToUpdate.UserId {
-		var users []userpkg.User
-		users, err = userpkg.User{}.Read("WHERE userId=?", UserToUpdate.UserId)
-		if err != nil {
-			log.Print(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		if len(users) == 0 {
-			errString := "User Does Not Exist"
-			log.Print(errString)
-			http.Error(w, errString, http.StatusInternalServerError)
-			return
-		}
-		userpkg.CurrUser = users[0]
-	}
-
 	// validate the person has correct permissions to update
 	if !userpkg.CurrUser.UpdateUser {
 		errString := "You do not have permissions for this"
@@ -121,6 +101,64 @@ func UpdateRole(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	// current user wont be updated if they remain logged in after changing themselves, so update the current users data if
+	// they edit them selves
+
+	if userpkg.CurrUser.UserId == UserToUpdate.UserId {
+		var users []userpkg.User
+		users, err = userpkg.User{}.Read("WHERE userId=?", UserToUpdate.UserId)
+		if err != nil {
+			log.Print(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if len(users) == 0 {
+			errString := "User Does Not Exist"
+			log.Print(errString)
+			http.Error(w, errString, http.StatusInternalServerError)
+			return
+		}
+		userpkg.CurrUser = users[0]
+	}
+
+	http.Redirect(w, r, "/admin/", http.StatusSeeOther)
+}
+
+// DeleteUser will allow admins to delete other users
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	// parse json
+	UserToUpdate := struct {
+		UserId int `json:"userId"`
+	}{}
+	err := json.NewDecoder(r.Body).Decode(&UserToUpdate)
+	if err != nil {
+		log.Print(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// validate the person has correct permissions to update
+	if !userpkg.CurrUser.DeleteUser {
+		errString := "You do not have permissions for this"
+		http.Error(w, errString, http.StatusUnauthorized)
+		log.Print(errString)
+		return
+	}
+
+	// Then delete the book from the cart based on the cartId
+	updateStmt := "UPDATE users SET active=false WHERE userId=?"
+	_, err = dbutil.DB.Exec(updateStmt, UserToUpdate.UserId)
+	if err != nil {
+		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if(userpkg.CurrUser.UserId == UserToUpdate.UserId) {
+		userpkg.CurrUser = userpkg.User{}
 	}
 
 	http.Redirect(w, r, "/admin/", http.StatusSeeOther)

@@ -13,6 +13,7 @@
               <th>Email</th>
               <th>Role</th>
               <th>Edit Role</th>
+              <th>Active</th>
             </tr>
             {{range .Users}}
             <tr>
@@ -22,15 +23,24 @@
               <td>{{.Email}}</td>
               <td>{{.RoleName}}</td>
               <td>
-                <button class="btn btn-primary" onclick="toggleOptionMenu(this)">Edit Role</button>
-                <div class="option-menu">
-                    <!-- Add your option menu content here -->
-                    <button class="btn btn-warning" onclick="SubmitRoleUpdate(this)" id="{{.UserId}}">Admin</button>
-                    <button class="btn btn-warning" onclick="SubmitRoleUpdate(this)" id="{{.UserId}}">Librarian</button>
-                    <button class="btn btn-warning" onclick="SubmitRoleUpdate(this)" id="{{.UserId}}">Professor</button>
-                    <button class="btn btn-warning" onclick="SubmitRoleUpdate(this)" id="{{.UserId}}">Student</button>
-                </div>
-            </td>
+                {{if .Active}}
+                    Active
+                {{else}}
+                    Deactivated
+                {{end}}
+
+              </td>
+              <td>
+                    <button class="btn btn-primary" onclick="toggleOptionMenu(this)">Edit Role</button>
+                    <div class="option-menu">
+                        <!-- Add your option menu content here -->
+                        <button class="btn btn-warning" onclick="SubmitRoleUpdate(this)" id="{{.UserId}}">Admin</button>
+                        <button class="btn btn-warning" onclick="SubmitRoleUpdate(this)" id="{{.UserId}}">Librarian</button>
+                        <button class="btn btn-warning" onclick="SubmitRoleUpdate(this)" id="{{.UserId}}">Professor</button>
+                        <button class="btn btn-warning" onclick="SubmitRoleUpdate(this)" id="{{.UserId}}">Student</button>
+                        <button class="btn btn-danger" onclick="SubmitDeleteUser(this)" id="{{.UserId}}">Deactivate</button>
+                    </div>
+                </td>
             </tr>
             {{end}}
           </table>
@@ -60,6 +70,34 @@
 
             // Configure the request
             xhr.open('POST', "/updateRole/", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            // Set up a callback function to handle the response
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        window.location.href = "/admin/";
+                    } else {
+                        alert(xhr.responseText)
+                    }
+                }
+            };
+
+            // Send the request with the JSON data
+            xhr.send(jsonDataString);
+    }
+
+    function SubmitDeleteUser(div) {
+        var userId = div.id;
+        var json = {"userId":parseInt(userId)};
+            // Convert the data to a JSON string
+            var jsonDataString = JSON.stringify(json);
+
+            // Create a new XMLHttpRequest object
+            var xhr = new XMLHttpRequest();
+
+            // Configure the request
+            xhr.open('POST', "/deleteUser/", true);
             xhr.setRequestHeader('Content-Type', 'application/json');
 
             // Set up a callback function to handle the response
