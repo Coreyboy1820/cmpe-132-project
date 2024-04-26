@@ -13,7 +13,7 @@
               <th>Email</th>
               <th>Role</th>
               <th>Edit Role</th>
-              <th>Active</th>
+              <th>Status</th>
             </tr>
             {{range .Users}}
             <tr>
@@ -22,14 +22,6 @@
               <td>{{.StudentId}}</td>
               <td>{{.Email}}</td>
               <td>{{.RoleName}}</td>
-              <td>
-                {{if .Active}}
-                    Active
-                {{else}}
-                    Deactivated
-                {{end}}
-
-              </td>
               <td>
                     <button class="btn btn-primary" onclick="toggleOptionMenu(this)">Edit Role</button>
                     <div class="option-menu">
@@ -41,6 +33,14 @@
                         <button class="btn btn-danger" onclick="SubmitDeleteUser(this)" id="{{.UserId}}">Deactivate</button>
                     </div>
                 </td>
+                <td>
+                    {{if .Active}}
+                        Active
+                    {{else}}
+                        Deactivated
+                    {{end}}
+    
+                  </td>
             </tr>
             {{end}}
           </table>
